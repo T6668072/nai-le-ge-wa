@@ -975,10 +975,19 @@
              这是标准做法，不是 bug。
            · 没找到音乐文件时按钮变成「🔇 无音乐」，游戏不受影响。
            ===================================================================== */
-        const BGM_CANDIDATES = ['audio/bgm.mp3', 'audio/bgm.ogg', 'audio/bgm.m4a', 'audio/bgm.wav'];
+        /* 同时接受 audio/ 子目录和根目录两种放法：
+           拖拽上传时文件夹常被"摊平"，文件会落到根目录，这里一起兜住。
+           同一后缀优先用 audio/ 里的，没有再退回根目录。 */
+        const BGM_CANDIDATES = [
+            'audio/bgm.mp3', 'bgm.mp3',
+            'audio/bgm.ogg', 'bgm.ogg',
+            'audio/bgm.m4a', 'bgm.m4a',
+            'audio/bgm.wav', 'bgm.wav'
+        ];
         let bgmEl = null;
         let bgmTry = 0;
         let bgmBroken = false;
+        let bgmErrCode = 0;
         let musicOn = true;
         let musicVol = 0.35;
         let bgmFadeTimer = null;
@@ -999,7 +1008,12 @@
             bgmEl.loop = true;
             bgmEl.preload = 'auto';
             bgmEl.volume = 0;
-            bgmEl.addEventListener('error', () => { bgmTry++; loadBgmSource(); });
+            bgmEl.addEventListener('error', () => {
+                // 记下浏览器给的错误码，方便排查（4=找不到/格式不支持，3=解码失败）
+                bgmErrCode = (bgmEl.error && bgmEl.error.code) || 0;
+                bgmTry++;
+                loadBgmSource();
+            });
             bgmEl.addEventListener('playing', () => { fadeBgm(musicOn ? musicVol : 0); });
             bgmEl.addEventListener('canplay', () => { if (musicOn) safePlay(); });
 
@@ -1023,6 +1037,12 @@
             if (!bgmEl) return;
             if (bgmTry >= BGM_CANDIDATES.length) {
                 bgmBroken = true;
+                // 控制台留一条可读的诊断，别让人猜
+                try {
+                    console.warn('[奶了个蛙] 背景音乐一个都没找到。试过：' + BGM_CANDIDATES.join('、') +
+                        '；MediaError=' + (bgmErrCode || 'n/a') +
+                        '（4 = 文件不存在或格式不支持，3 = 文件损坏解不开）');
+                } catch (e) {}
                 syncMusicUi();
                 return;
             }
@@ -1064,7 +1084,7 @@
 
         function toggleMusic() {
             if (bgmBroken) {
-                toast('还没放音乐文件：把 mp3 放到 audio/bgm.mp3 就会响');
+                toast('没找到音乐文件：把 bgm.mp3 放进 audio/ 目录，或直接和 index.html 放一起');
                 return;
             }
             musicOn = !musicOn;
@@ -1086,7 +1106,9 @@
                 else if (musicOn) setPill(btn, '🔊', '音乐');
                 else setPill(btn, '🔇', '静音');
                 btn.classList.toggle('off', !musicOn || bgmBroken);
-                btn.title = bgmBroken ? '没找到 audio/bgm.*，放一首进去就有了' : (musicOn ? '点一下关掉背景音乐' : '点一下打开背景音乐');
+                btn.title = bgmBroken
+                    ? '没找到 bgm.mp3（放 audio/ 目录或和 index.html 放一起都行）'
+                    : (musicOn ? '点一下关掉背景音乐' : '点一下打开背景音乐');
             }
             const tb = document.getElementById('musicToggle');
             if (tb) tb.textContent = musicOn ? '音乐：开' : '音乐：关';
