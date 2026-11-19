@@ -142,100 +142,51 @@
         .tool:disabled { opacity: .45; cursor: not-allowed; }
 
         /* ===================================================================
-           新增：顶栏（音乐 / 账号）+ 弹层 + 存档位
+           背景音乐：顶栏按钮 + 音量面板
            =================================================================== */
         #topbar {
             position: fixed; top: 10px; right: 10px;
-            display: flex; gap: 8px; z-index: 80;
+            display: flex; gap: 8px; align-items: center; z-index: 80;
         }
         .pill {
             border: none; border-radius: 999px;
             padding: 8px 14px; font-size: 14px; line-height: 1;
             background: rgba(255, 255, 255, .92); color: #4a5a3f;
             box-shadow: 0 2px 6px rgba(0, 0, 0, .18);
-            cursor: pointer; max-width: 44vw;
-            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            cursor: pointer; white-space: nowrap;
         }
-        .pill .ico { font-size: 15px; }
-        .pill .lbl { margin-left: 4px; }
         .pill:active { transform: translateY(1px); }
         .pill.off { opacity: .68; }
+        .pill.icon { padding: 8px 11px; font-size: 15px; }
+        .pill .lbl { margin-left: 4px; }
 
-        .sheet {
+        #musicSheet {
             position: fixed; inset: 0; z-index: 120;
-            background: rgba(0, 0, 0, .55);
+            background: rgba(0, 0, 0, .5);
             display: none; align-items: center; justify-content: center;
             padding: 16px; overflow: auto;
         }
-        .sheet.show { display: flex; }
-        .sheet .panel {
-            width: 100%; max-width: 420px; max-height: 86vh; overflow: auto;
-            background: #fffdf5; border-radius: 18px;
-            padding: 20px; box-shadow: 0 12px 32px rgba(0, 0, 0, .3);
-            color: #5a4a2f; font-size: 14px; text-align: left;
+        #musicSheet.show { display: flex; }
+        #musicSheet .panel {
+            width: 100%; max-width: 360px;
+            background: #fffdf5; border-radius: 18px; padding: 20px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, .3);
+            color: #5a4a2f; font-size: 14px;
         }
-        .panel h2 { font-size: 18px; margin-bottom: 6px; color: #4a7a3f; }
-        .panel .hint { font-size: 12px; color: #a09580; line-height: 1.6; margin-bottom: 12px; }
-        .tabs { display: flex; gap: 8px; margin-bottom: 12px; }
-        .tabs button {
-            flex: 1; padding: 8px; border: none; border-radius: 10px;
-            background: #eef0e6; color: #6b7a5d; font-size: 14px; cursor: pointer;
-        }
-        .tabs button.on { background: #6dbf5e; color: #fff; }
-        .field { display: block; margin-bottom: 10px; }
-        .field > span { display: block; font-size: 12px; color: #8a8069; margin-bottom: 4px; }
-        .field input[type=text],
-        .field input[type=password] {
-            width: 100%; padding: 10px 12px; font-size: 16px;
-            border: 1px solid #e2d9c2; border-radius: 10px;
-            background: #fff; color: #4a4a3f; outline: none;
-        }
-        .field input:focus { border-color: #6dbf5e; }
-        .rowbtns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
-        .mini {
-            flex: 1 1 auto; min-width: 84px; padding: 9px 12px;
+        #musicSheet h2 { font-size: 17px; color: #4a7a3f; margin-bottom: 6px; }
+        #musicSheet .hint { font-size: 12px; color: #a09580; line-height: 1.6; margin-bottom: 14px; }
+        #musicSheet .row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        #musicSheet input[type=range] { width: 100%; accent-color: #6dbf5e; }
+        #musicSheet .btn-close {
+            width: 100%; margin-top: 14px; padding: 10px;
             border: none; border-radius: 10px; font-size: 14px;
             background: #6dbf5e; color: #fff; cursor: pointer;
         }
-        .mini.ghost { background: #efe9da; color: #6b6152; }
-        .mini.danger { background: #e8836f; }
-        .mini:disabled { opacity: .45; cursor: not-allowed; }
-        .msg { font-size: 13px; min-height: 18px; color: #d9705c; margin-top: 8px; }
-        .msg.ok { color: #4f9d4a; }
-        .slots { display: flex; flex-direction: column; gap: 8px; }
-        .slotrow {
-            border: 1px dashed #ddd3bb; border-radius: 12px; padding: 10px 12px;
-            display: flex; align-items: center; gap: 10px;
-        }
-        .slotrow .info { flex: 1; min-width: 0; }
-        .slotrow .info b { font-size: 13px; }
-        .slotrow .info small { display: block; font-size: 11px; color: #a09580; margin-top: 3px; }
-        .slotrow .ops { display: flex; gap: 6px; flex: none; }
-        .slotrow .ops button {
-            border: none; border-radius: 8px; padding: 7px 10px;
-            font-size: 12px; background: #eef0e6; color: #5f6b52; cursor: pointer;
-        }
-        .slotrow .ops button.warn { color: #b4593f; }
-        .sep { height: 1px; background: #ece4d3; margin: 14px 0; }
-        textarea.code {
-            width: 100%; height: 70px; resize: vertical;
-            font-family: ui-monospace, Consolas, monospace; font-size: 11px;
-            border: 1px solid #e2d9c2; border-radius: 10px; padding: 8px;
-            color: #6b6152; background: #fff;
-        }
-        input[type=range] { width: 100%; accent-color: #6dbf5e; }
-        #toast {
-            position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%);
-            background: rgba(0, 0, 0, .78); color: #fff; font-size: 14px;
-            padding: 9px 18px; border-radius: 999px; z-index: 200;
-            opacity: 0; pointer-events: none; transition: opacity .2s;
-            max-width: 86vw; text-align: center;
-        }
-        #toast.show { opacity: 1; }
+        #musicSheet .btn-close.ghost { background: #efe9da; color: #6b6152; margin-top: 8px; }
+
         @media (max-width: 480px) {
             .pill { padding: 9px 11px; font-size: 13px; }
             .pill .lbl { display: none; }   /* 小屏只留图标，别挡住标题 */
-            .sheet .panel { padding: 16px; }
         }
 
     </style>
@@ -275,746 +226,83 @@
         </div>
     </div>
 
-    <!-- ========= 新增：顶栏（音乐 / 账号） ========= -->
+    <!-- 背景音乐：开关 + 音量 -->
     <div id="topbar">
-        <button id="musicBtn" class="pill" title="背景音乐"><span class="ico">🔊</span><span class="lbl">音乐</span></button>
-        <button id="userBtn" class="pill" title="账号与存档"><span class="ico">👤</span><span class="lbl">游客</span></button>
+        <button id="musicBtn" class="pill" title="背景音乐开关"><span class="ico">🔊</span><span class="lbl">音乐</span></button>
+        <button id="musicCfg" class="pill icon" title="音量设置">⚙</button>
     </div>
 
-    <!-- 登录 / 注册 -->
-    <div class="sheet" id="authSheet">
+    <div id="musicSheet">
         <div class="panel">
-            <h2>登录 / 注册</h2>
-            <p class="hint">账号和存档都存在这台设备的浏览器里，不用服务器；换设备请用「存档码」搬过去。</p>
-            <div class="tabs">
-                <button id="tabLogin" class="on">登录</button>
-                <button id="tabReg">注册</button>
-            </div>
-            <label class="field"><span>昵称（2～16 个字，不能有空格）</span>
-                <input id="inName" type="text" maxlength="16" autocomplete="username" placeholder="给自己的存档起个名字">
-            </label>
-            <label class="field"><span>密码（6～20 位）</span>
-                <input id="inPwd" type="password" maxlength="20" autocomplete="current-password" placeholder="至少 6 位">
-            </label>
-            <label class="field" id="pwd2Wrap" style="display:none"><span>确认密码</span>
-                <input id="inPwd2" type="password" maxlength="20" autocomplete="new-password" placeholder="再输一遍">
-            </label>
-            <div class="rowbtns">
-                <button id="authGo" class="mini">登录</button>
-                <button id="authGuest" class="mini ghost">游客继续玩</button>
-            </div>
-            <div class="msg" id="authMsg"></div>
+            <h2>背景音乐</h2>
+            <p class="hint" id="musicHint">默认音量 35%。切到别的标签页、最小化窗口或离开页面时会自动暂停，回来接着放。</p>
+            <div class="row"><span>音量</span><b id="volText">35%</b></div>
+            <input id="volRange" type="range" min="0" max="100" step="1" value="35">
+            <button id="musicToggle" class="btn-close">暂停音乐</button>
+            <button id="closeMusic" class="btn-close ghost">关闭</button>
         </div>
     </div>
-
-    <!-- 账号信息 / 音乐 / 存档码 -->
-    <div class="sheet" id="accSheet">
-        <div class="panel">
-            <h2 id="accName">账号</h2>
-            <p class="hint" id="accHint"></p>
-            <div class="rowbtns">
-                <button id="openSaves" class="mini">存档位</button>
-                <button id="switchAcc" class="mini ghost">切换账号</button>
-            </div>
-            <div class="sep"></div>
-            <b>背景音乐</b>
-            <div class="rowbtns" style="margin-top:8px">
-                <button id="musicToggle" class="mini ghost">音乐：开</button>
-            </div>
-            <label class="field" style="margin-top:10px"><span>音量 <b id="volText">35%</b></span>
-                <input id="volRange" type="range" min="0" max="100" step="1" value="35">
-            </label>
-            <div class="sep"></div>
-            <b>存档码（跨设备搬家）</b>
-            <p class="hint" style="margin:6px 0">导出：点「导出」把这串码复制走；导入：粘贴存档码后点「导入」，会覆盖当前账号的进度。</p>
-            <textarea id="codeBox" class="code" spellcheck="false" placeholder="点「导出」生成存档码，或把存档码粘贴到这里"></textarea>
-            <div class="rowbtns">
-                <button id="exportBtn" class="mini">导出</button>
-                <button id="importBtn" class="mini ghost">导入</button>
-                <button id="closeAcc" class="mini ghost">关闭</button>
-            </div>
-            <div class="msg" id="accMsg"></div>
-        </div>
-    </div>
-
-    <!-- 3 个手动存档位 -->
-    <div class="sheet" id="saveSheet">
-        <div class="panel">
-            <h2>存档位</h2>
-            <p class="hint">每次点牌都会自动记一份「没打完的牌面」，下次打开原样续上。下面是 3 个手动档位，可以把不同进度各存一格。</p>
-            <div class="slots" id="slotList"></div>
-            <div class="rowbtns" style="margin-top:14px">
-                <button id="closeSaves" class="mini ghost">关闭</button>
-            </div>
-            <div class="msg" id="saveMsg"></div>
-        </div>
-    </div>
-
-    <div id="toast"></div>
 
     <script>
         /* =====================================================================
-           【新增 1】本地账号 + 多存档位
-           【新增 2】背景音乐
+           背景音乐
            ---------------------------------------------------------------------
-           设计说明（重要，先读这段）：
-           · 网页版没有服务器，所以"账号"是这个浏览器里的本地账号：
-             账号表、密码摘要、存档全部存在 localStorage 里。
-             好处：不用花钱、不用部署后端、离线也能玩。
-             代价：清浏览器缓存 / 换设备 / 换浏览器，存档不会自己跟着走
-                   （用「存档码」可以手动搬到另一台设备）。
-           · 密码不存明文，只存 sha256(盐 + 密码)，键名和算法与小程序版
-             utils/store.js 完全一致，方便以后两边互通。
-           · 以后要真正的云端账号，只需要把下面 kvGet / kvSet 换成云端 API，
-             游戏逻辑一行都不用改。
+           · 音乐文件放在 audio/ 子目录或与本文件同级的根目录都能识别，
+             按 mp3 → ogg → m4a → wav 的顺序取第一个能读到的。
+           · 开关与音量记在 localStorage，下次打开沿用。
+           · 浏览器不允许"没交互就出声"，所以首次点击/按键时补播一次。
+           · 切到别的标签页、最小化、关闭或离开页面时立即静音，
+             回到页面再自动续播。
            ===================================================================== */
-
-        const NLGW = {
-            ACC: 'NLGW_ACCOUNTS_V1',
-            SESSION: 'NLGW_SESSION_V1',
-            COINS: 'NLGW_COINS_V1_',
-            STATS: 'NLGW_STATS_V1_',
-            LEVEL: 'NLGW_LEVEL_V1_',
-            AUTO: 'NLGW_AUTO_V1_',
-            SLOTS: 'NLGW_SLOTS_V1_',
-            MUSIC: 'NLGW_MUSIC_V1',
-            /* 老版本（还没有账号系统时）用的键，只用来搬家 */
-            LEGACY_COINS: 'yygy-coins',
-            LEGACY_STATS: 'yygy-stats'
-        };
-
-        const GUEST = '__guest__';       // 游客账号的固定名字
-        const SLOT_COUNT = 3;            // 手动存档位数量
-        const SAVE_VERSION = 1;          // 存档格式版本，改了要兼容旧档
-        const SALT_TAG = '|nlge-v1';
-
-        /* ---------------- 极简 SHA-256（纯 JS，不依赖任何库） ----------------
-           用途：密码不落明文。注意这只是"本地档位锁"，不是真正的安全边界：
-           能开控制台的人一样能改 localStorage。 */
-        const SHA_K = [
-            0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-            0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-            0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-            0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-            0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-            0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-            0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-            0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
-        ];
-        function shaRotr(x, n) { return (x >>> n) | (x << (32 - n)); }
-        function shaUtf8Bytes(str) {
-            const out = [];
-            for (let i = 0; i < str.length; i++) {
-                let c = str.charCodeAt(i);
-                if (c < 0x80) {
-                    out.push(c);
-                } else if (c < 0x800) {
-                    out.push(0xc0 | (c >> 6), 0x80 | (c & 63));
-                } else if (c >= 0xd800 && c < 0xdc00) {
-                    i++;
-                    const c2 = 0x10000 + (((c & 0x3ff) << 10) | (str.charCodeAt(i) & 0x3ff));
-                    out.push(0xf0 | (c2 >> 18), 0x80 | ((c2 >> 12) & 63), 0x80 | ((c2 >> 6) & 63), 0x80 | (c2 & 63));
-                } else {
-                    out.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
-                }
-            }
-            return out;
-        }
-        function shaHex8(n) { let s = (n >>> 0).toString(16); while (s.length < 8) s = '0' + s; return s; }
-        function sha256(message) {
-            const bytes = shaUtf8Bytes(String(message));
-            const bitLen = bytes.length * 8;
-            const total = (((bytes.length + 1 + 8) + 63) >> 6) << 6;
-            const buf = new Uint8Array(total);
-            for (let i = 0; i < bytes.length; i++) buf[i] = bytes[i];
-            buf[bytes.length] = 0x80;
-            const dv = new DataView(buf.buffer);
-            dv.setUint32(total - 8, Math.floor(bitLen / 4294967296));
-            dv.setUint32(total - 4, bitLen >>> 0);
-
-            let h0 = 0x6a09e667, h1 = 0xbb67ae85, h2 = 0x3c6ef372, h3 = 0xa54ff53a;
-            let h4 = 0x510e527f, h5 = 0x9b05688c, h6 = 0x1f83d9ab, h7 = 0x5be0cd19;
-            const w = new Uint32Array(64);
-
-            for (let off = 0; off < total; off += 64) {
-                for (let i = 0; i < 16; i++) w[i] = dv.getUint32(off + i * 4);
-                for (let i = 16; i < 64; i++) {
-                    const x = w[i - 15], y = w[i - 2];
-                    const s0 = shaRotr(x, 7) ^ shaRotr(x, 18) ^ (x >>> 3);
-                    const s1 = shaRotr(y, 17) ^ shaRotr(y, 19) ^ (y >>> 10);
-                    w[i] = (w[i - 16] + s0 + w[i - 7] + s1) >>> 0;
-                }
-                let a = h0, b = h1, c = h2, d = h3, e = h4, f = h5, g = h6, h = h7;
-                for (let i = 0; i < 64; i++) {
-                    const S1 = shaRotr(e, 6) ^ shaRotr(e, 11) ^ shaRotr(e, 25);
-                    const ch = (e & f) ^ (~e & g);
-                    const t1 = (h + S1 + ch + SHA_K[i] + w[i]) >>> 0;
-                    const S0 = shaRotr(a, 2) ^ shaRotr(a, 13) ^ shaRotr(a, 22);
-                    const maj = (a & b) ^ (a & c) ^ (b & c);
-                    const t2 = (S0 + maj) >>> 0;
-                    h = g; g = f; f = e; e = (d + t1) >>> 0;
-                    d = c; c = b; b = a; a = (t1 + t2) >>> 0;
-                }
-                h0 = (h0 + a) >>> 0; h1 = (h1 + b) >>> 0; h2 = (h2 + c) >>> 0; h3 = (h3 + d) >>> 0;
-                h4 = (h4 + e) >>> 0; h5 = (h5 + f) >>> 0; h6 = (h6 + g) >>> 0; h7 = (h7 + h) >>> 0;
-            }
-            return shaHex8(h0) + shaHex8(h1) + shaHex8(h2) + shaHex8(h3) +
-                shaHex8(h4) + shaHex8(h5) + shaHex8(h6) + shaHex8(h7);
-        }
-
-        /* ---------------- localStorage 读写（出异常也不会把游戏搞崩） ---------------- */
-        function kvGet(key, def) {
-            try {
-                const raw = localStorage.getItem(key);
-                if (raw === null || raw === '') return def;
-                const v = JSON.parse(raw);
-                return (v === null || v === undefined) ? def : v;
-            } catch (e) { return def; }
-        }
-        function kvSet(key, val) {
-            try { localStorage.setItem(key, JSON.stringify(val)); return true; } catch (e) { return false; }
-        }
-        function kvDel(key) { try { localStorage.removeItem(key); } catch (e) {} }
-
-        /* ---------------- 账号表 / 会话 ---------------- */
-        function keyFor(prefix, user) { return prefix + encodeURIComponent(user || GUEST); }
-        function uk(prefix) { return keyFor(prefix, currentUser() || GUEST); }
-        function statsKey() { return uk(NLGW.STATS); }
-        function coinsKey() { return uk(NLGW.COINS); }
-        function levelKey() { return uk(NLGW.LEVEL); }
-        function autoKey() { return uk(NLGW.AUTO); }
-        function slotsKey() { return uk(NLGW.SLOTS); }
-
-        function accounts() {
-            const a = kvGet(NLGW.ACC, {});
-            return (a && typeof a === 'object') ? a : {};
-        }
-        function saveAccounts(a) { kvSet(NLGW.ACC, a); }
-
-        function randomSalt() {
-            let s = '';
-            const chars = 'abcdef0123456789';
-            const rnd = [];
-            let ok = false;
-            try {
-                const arr = new Uint8Array(24);
-                (window.crypto || window.msCrypto).getRandomValues(arr);
-                for (let i = 0; i < arr.length; i++) rnd.push(arr[i]);
-                ok = rnd.length === 24;
-            } catch (e) { ok = false; }
-            if (!ok) { rnd.length = 0; for (let i = 0; i < 24; i++) rnd.push(Math.floor(Math.random() * 256)); }
-            for (let i = 0; i < 24; i++) s += chars.charAt(rnd[i] % 16);
-            return s;
-        }
-        function hashPwd(salt, pwd) { return sha256(salt + '|' + pwd + SALT_TAG); }
-
-        function checkName(name) {
-            if (!name || name.length < 2) return '昵称至少 2 个字';
-            if (name.length > 16) return '昵称最多 16 个字';
-            if (/\s/.test(name)) return '昵称里不能有空格';
-            if (name === GUEST) return '这个昵称不能用';
-            return '';
-        }
-        function checkPwd(pwd) {
-            if (!pwd || pwd.length < 6) return '密码至少 6 位';
-            if (pwd.length > 20) return '密码最多 20 位';
-            return '';
-        }
-
-        function currentUser() {
-            const s = kvGet(NLGW.SESSION, null);
-            if (!s || !s.user) return '';
-            const all = accounts();
-            if (!all[s.user]) return '';      // 账号被清了，会话就失效
-            return s.user;
-        }
-        function setSession(user) { kvSet(NLGW.SESSION, { user: user, at: Date.now() }); }
-        function isGuestUser(u) { return !u || u === GUEST; }
-        function displayName(u) { return isGuestUser(u) ? '游客' : u; }
-
-        function ensureSession() {
-            if (currentUser()) return;
-            const all = accounts();
-            if (!all[GUEST]) {
-                all[GUEST] = { name: GUEST, salt: '', hash: '', guest: true, createdAt: Date.now(), lastLogin: Date.now() };
-                saveAccounts(all);
-            }
-            setSession(GUEST);
-        }
-
-        /* 老版本没有账号系统，金币/胜负是全局的 —— 升级后归到「游客」名下，别丢 */
-        function migrateLegacy() {
-            const all = accounts();
-            if (Object.keys(all).length > 0) return;              // 已经有账号体系了，不折腾
-            const oldCoins = localStorage.getItem(NLGW.LEGACY_COINS);
-            const oldStats = localStorage.getItem(NLGW.LEGACY_STATS);
-            if (oldCoins === null && oldStats === null) return;
-
-            if (oldCoins !== null) {
-                const c = parseInt(oldCoins, 10);
-                if (!isNaN(c)) kvSet(keyFor(NLGW.COINS, GUEST), c);
-            }
-            if (oldStats !== null) {
-                try {
-                    const st = JSON.parse(oldStats);
-                    if (st && typeof st === 'object') kvSet(keyFor(NLGW.STATS, GUEST), st);
-                } catch (e) {}
-            }
-            setSession(GUEST);
-        }
-
-        /* ---------------- 账号操作 ---------------- */
-
-        function registerAccount(name, pwd) {
-            name = String(name || '').trim();
-            pwd = String(pwd || '');
-            const err = checkName(name) || checkPwd(pwd);
-            if (err) return { ok: false, msg: err };
-            const all = accounts();
-            if (all[name]) return { ok: false, msg: '这个昵称已经被注册了' };
-
-            const salt = randomSalt();
-            all[name] = { name: name, salt: salt, hash: hashPwd(salt, pwd), createdAt: Date.now(), lastLogin: Date.now() };
-            saveAccounts(all);
-
-            persistAuto();                 // 先把游客当前的牌面存进游客档
-            setSession(name);              // 换成新账号
-            const adopted = adoptGuestProgress(name);
-            afterSwitch();
-            return { ok: true, msg: adopted ? '注册成功，已把游客进度带过来' : '注册成功，开始新的一局' };
-        }
-
-        function loginAccount(name, pwd) {
-            name = String(name || '').trim();
-            pwd = String(pwd || '');
-            if (!name) return { ok: false, msg: '请先填昵称' };
-            if (!pwd) return { ok: false, msg: '请先填密码' };
-            const all = accounts();
-            const acc = all[name];
-            if (!acc) return { ok: false, msg: '没有这个昵称，先去注册吧' };
-            if (acc.hash !== hashPwd(acc.salt, pwd)) return { ok: false, msg: '密码不对，再想想' };
-
-            acc.lastLogin = Date.now();
-            saveAccounts(all);
-
-            persistAuto();
-            setSession(name);
-            afterSwitch();
-            return { ok: true, msg: '欢迎回来，' + name };
-        }
-
-        /* 注册时把游客档搬进新账号（新账号已有数据就不动） */
-        function adoptGuestProgress(user) {
-            const gCoins = kvGet(keyFor(NLGW.COINS, GUEST), null);
-            const gStats = kvGet(keyFor(NLGW.STATS, GUEST), null);
-            const gLevel = kvGet(keyFor(NLGW.LEVEL, GUEST), null);
-            const gAuto = kvGet(keyFor(NLGW.AUTO, GUEST), null);
-            if (gCoins === null && gStats === null && gLevel === null && !gAuto) return false;
-            if (kvGet(keyFor(NLGW.COINS, user), null) !== null) return false;
-            if (gCoins !== null) kvSet(keyFor(NLGW.COINS, user), gCoins);
-            if (gStats !== null) kvSet(keyFor(NLGW.STATS, user), gStats);
-            if (gLevel !== null) kvSet(keyFor(NLGW.LEVEL, user), gLevel);
-            if (gAuto) kvSet(keyFor(NLGW.AUTO, user), gAuto);
-            return true;
-        }
-
-        function toGuest() {
-            persistAuto();
-            setSession(GUEST);
-            afterSwitch();
-            toast('已退出登录，进度留在游客档');
-        }
-
-        /* 切换账号后：刷新金币/胜负 → 续上次牌面，没得续就按上次关卡开新局 */
-        function afterSwitch() {
-            hideAllSheets();
-            applyProfile();
-            refreshUserPill();
-            const auto = loadAuto();
-            const ok = auto && restoreSnapshot(auto.snap);
-            if (!ok) {
-                level = clampLevel(kvGet(levelKey(), 1));
-                newGame();
-            }
-        }
-
-        function applyProfile() {
-            coins = loadCoins();
-            renderStats();
-            renderCoins();
-        }
-
-        function clampLevel(n) {
-            const x = parseInt(n, 10) || 1;
-            return Math.min(Math.max(x, 1), LEVEL_COUNTS.length);
-        }
-        function saveLevel(n) { kvSet(levelKey(), clampLevel(n)); }
-
-        /* ---------------- 存档快照：把整副牌面压成一小段 JSON ---------------- */
-        function snapshot() {
-            return {
-                v: SAVE_VERSION,
-                level: level,
-                tileSize: TILE_SIZE,
-                wing: WX,
-                boardW: BOARD_W,
-                boardH: BOARD_H,
-                moves: moves,
-                seconds: seconds,
-                // 用数组而不是对象，450 张牌也就十几 KB
-                tiles: tiles.map(t => [t.id, t.layer, t.x, t.y, t.p, t.removed ? 1 : 0]),
-                slot: slot.map(t => t.id),
-                savedAt: Date.now()
-            };
-        }
-
-        function restoreSnapshot(snap) {
-            if (!snap || snap.v !== SAVE_VERSION) return false;
-            if (!snap.tiles || !snap.tiles.length) return false;
-            const lv = parseInt(snap.level, 10);
-            if (!(lv >= 1 && lv <= LEVEL_COUNTS.length)) return false;
-
-            TILE_SIZE = parseInt(snap.tileSize, 10) || 72;
-            WX = parseInt(snap.wing, 10) || 86;
-            BOARD_W = parseInt(snap.boardW, 10) || 552;
-            BOARD_H = parseInt(snap.boardH, 10) || 512;
-            const root = document.documentElement.style;
-            root.setProperty('--ts', TILE_SIZE + 'px');
-            root.setProperty('--bw', BOARD_W + 'px');
-            root.setProperty('--bh', BOARD_H + 'px');
-
-            tiles = snap.tiles.map(a => ({
-                id: a[0], layer: a[1], x: a[2], y: a[3], p: a[4], removed: !!a[5]
-            }));
-            const byId = {};
-            tiles.forEach(t => { byId[t.id] = t; });
-            slot = [];
-            (snap.slot || []).forEach(id => { const t = byId[id]; if (t) slot.push(t); });
-
-            level = lv;
-            moves = parseInt(snap.moves, 10) || 0;
-            seconds = Math.max(0, parseInt(snap.seconds, 10) || 0);
-            gameOver = false;
-
-            document.getElementById('movesText').textContent = moves;
-            document.getElementById('levelInfo').textContent =
-                '第 ' + level + ' 关 / 共 ' + LEVEL_COUNTS.length + ' 关 · 本关 ' + LEVEL_COUNTS[level - 1] + ' 张牌';
-            document.getElementById('overlay').classList.remove('show');
-
-            stopTimer();
-            updateTime();      // 先显示存档里的用时，再从这一刻接着走
-            resumeTimer();
-
-            renderAll();
-            renderStats();
-            fitScreen();
-            return true;
-        }
-
-        /* ---------------- 自动存档：每次点牌后攒一下再写 ---------------- */
-        let _persistTimer = null;
-        function autoSave(immediate) {
-            if (_persistTimer) { clearTimeout(_persistTimer); _persistTimer = null; }
-            if (immediate) return persistAuto();
-            _persistTimer = setTimeout(() => { _persistTimer = null; persistAuto(); }, 400);
-        }
-        function persistAuto() {
-            if (!currentUser()) return;
-            if (!tiles.length || gameOver) { kvDel(autoKey()); return; }
-            kvSet(autoKey(), { snap: snapshot(), at: Date.now() });
-        }
-        function loadAuto() {
-            const d = kvGet(autoKey(), null);
-            return (d && d.snap) ? d : null;
-        }
-
-        /* ---------------- 3 个手动存档位 ---------------- */
-        function loadSlots() {
-            const arr = kvGet(slotsKey(), []);
-            const out = [];
-            for (let i = 0; i < SLOT_COUNT; i++) out.push((arr && arr[i]) ? arr[i] : null);
-            return out;
-        }
-        function saveSlot(i) {
-            if (gameOver) { saveMsg('本局已经结束了，先重开本关再存档'); return; }
-            if (!tiles.length) { saveMsg('现在没有进行中的牌局'); return; }
-            const list = loadSlots();
-            list[i] = {
-                level: level, moves: moves, seconds: seconds,
-                time: nowText(), snap: snapshot()
-            };
-            kvSet(slotsKey(), list);
-            renderSlots();
-            saveMsg('已存到 ' + (i + 1) + ' 号位', true);
-        }
-        function loadSlot(i) {
-            const s = loadSlots()[i];
-            if (!s || !s.snap) { saveMsg('这个位置还是空的'); return; }
-            if (!confirm('读取 ' + (i + 1) + ' 号位？当前这局的进度会被覆盖。')) return;
-            if (!restoreSnapshot(s.snap)) { saveMsg('存档读不出来，可能已经损坏'); return; }
-            renderSlots();
-            saveMsg('已读取 ' + (i + 1) + ' 号位', true);
-            toast('已读取 ' + (i + 1) + ' 号位');
-        }
-        function clearSlot(i) {
-            const list = loadSlots();
-            if (!list[i]) return;
-            if (!confirm('删掉 ' + (i + 1) + ' 号位？删了就找不回来了。')) return;
-            list[i] = null;
-            kvSet(slotsKey(), list);
-            renderSlots();
-            saveMsg('已清空 ' + (i + 1) + ' 号位', true);
-        }
-
-        /* ---------------- 存档码：base64(JSON)，用于跨设备搬家 ---------------- */
-        function b64encode(str) {
-            try { return btoa(unescape(encodeURIComponent(str))); } catch (e) { return ''; }
-        }
-        function b64decode(b64) {
-            try { return decodeURIComponent(escape(atob(String(b64).replace(/\s+/g, '')))); } catch (e) { return ''; }
-        }
-        function exportCode() {
-            const data = {
-                app: 'nai-le-ge-wa', v: SAVE_VERSION,
-                user: displayName(currentUser()), at: Date.now(),
-                coins: coins, stats: loadStats(),
-                level: clampLevel(kvGet(levelKey(), level)),
-                auto: loadAuto(), slots: loadSlots()
-            };
-            return b64encode(JSON.stringify(data));
-        }
-        function importCode(code) {
-            const txt = b64decode(code);
-            if (!txt) return { ok: false, msg: '这串码读不出来，确认复制全了吗' };
-            let d = null;
-            try { d = JSON.parse(txt); } catch (e) { return { ok: false, msg: '存档码格式不对' }; }
-            if (!d || d.app !== 'nai-le-ge-wa' || d.v !== SAVE_VERSION) {
-                return { ok: false, msg: '不是这个游戏的存档码，或者版本不匹配' };
-            }
-            if (!confirm('导入会覆盖当前账号的金币、胜负和存档，确定吗？')) return { ok: false, msg: '' };
-
-            if (typeof d.coins === 'number') kvSet(coinsKey(), Math.max(0, Math.floor(d.coins)));
-            if (d.stats && typeof d.stats === 'object') {
-                kvSet(statsKey(), {
-                    wins: Math.max(0, parseInt(d.stats.wins, 10) || 0),
-                    loses: Math.max(0, parseInt(d.stats.loses, 10) || 0)
-                });
-            }
-            if (d.level) saveLevel(d.level);
-            if (d.auto && d.auto.snap) kvSet(autoKey(), d.auto); else kvDel(autoKey());
-            if (Array.isArray(d.slots)) kvSet(slotsKey(), d.slots.slice(0, SLOT_COUNT));
-
-            applyProfile();
-            const auto = loadAuto();
-            if (!(auto && restoreSnapshot(auto.snap))) {
-                level = clampLevel(kvGet(levelKey(), 1));
-                newGame();
-            }
-            renderSlots();
-            return { ok: true, msg: '导入成功' };
-        }
-
-        /* ---------------- 界面：顶栏、弹层、存档位 ---------------- */
-        let _toastTimer = null;
-        function toast(msg) {
-            const el = document.getElementById('toast');
-            if (!el) return;
-            el.textContent = msg;
-            el.classList.add('show');
-            if (_toastTimer) clearTimeout(_toastTimer);
-            _toastTimer = setTimeout(() => el.classList.remove('show'), 2100);
-        }
-        function esc(s) {
-            return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-        }
-        function pad2(n) { return n < 10 ? '0' + n : '' + n; }
-        function fmtSec(sec) {
-            const s = Math.max(0, Math.floor(sec || 0));
-            return pad2(Math.floor(s / 60)) + ':' + pad2(s % 60);
-        }
-        function nowText() {
-            const d = new Date();
-            return (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
-        }
-
-        function setPill(el, ico, lbl) {
-            if (!el) return;
-            const i = el.querySelector('.ico');
-            const l = el.querySelector('.lbl');
-            if (i) i.textContent = ico;
-            if (l) l.textContent = lbl;
-        }
-
-        function refreshUserPill() {
-            const u = currentUser();
-            const btn = document.getElementById('userBtn');
-            if (!btn) return;
-            setPill(btn, '👤', isGuestUser(u) ? '游客' : u);
-            btn.title = isGuestUser(u) ? '游客模式：点这里登录或注册' : '账号：' + u;
-        }
-
-        function openSheet(id) {
-            stopTimer();                       // 弹层打开时不计时，跟小程序版一致
-            const el = document.getElementById(id);
-            if (el) el.classList.add('show');
-        }
-        function closeSheet(id) {
-            const el = document.getElementById(id);
-            if (el) el.classList.remove('show');
-            if (!gameOver) resumeTimer();
-        }
-        function hideAllSheets() {
-            ['authSheet', 'accSheet', 'saveSheet'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.classList.remove('show');
-            });
-            if (!gameOver) resumeTimer();
-        }
-
-        function setAuthMode(kind) {
-            const isReg = kind === 'reg';
-            document.getElementById('tabLogin').classList.toggle('on', !isReg);
-            document.getElementById('tabReg').classList.toggle('on', isReg);
-            document.getElementById('pwd2Wrap').style.display = isReg ? 'block' : 'none';
-            document.getElementById('authGo').textContent = isReg ? '注册并开始' : '登录';
-            authMsg('');
-        }
-        function authMsg(msg, ok) {
-            const el = document.getElementById('authMsg');
-            el.textContent = msg || '';
-            el.classList.toggle('ok', !!ok);
-        }
-        function saveMsg(msg, ok) {
-            const el = document.getElementById('saveMsg');
-            el.textContent = msg || '';
-            el.classList.toggle('ok', !!ok);
-        }
-        function accMsg(msg, ok) {
-            const el = document.getElementById('accMsg');
-            el.textContent = msg || '';
-            el.classList.toggle('ok', !!ok);
-        }
-
-        function submitAuth() {
-            const kind = document.getElementById('tabReg').classList.contains('on') ? 'reg' : 'login';
-            const name = document.getElementById('inName').value;
-            const pwd = document.getElementById('inPwd').value;
-            if (kind === 'reg') {
-                const pwd2 = document.getElementById('inPwd2').value;
-                if (String(pwd) !== String(pwd2)) { authMsg('两次输入的密码不一样'); return; }
-                const res = registerAccount(name, pwd);
-                if (!res.ok) { authMsg(res.msg); return; }
-                authMsg(res.msg, true);
-                toast(res.msg);
-            } else {
-                const res = loginAccount(name, pwd);
-                if (!res.ok) { authMsg(res.msg); return; }
-                authMsg(res.msg, true);
-                toast(res.msg);
-            }
-            document.getElementById('inPwd').value = '';
-            document.getElementById('inPwd2').value = '';
-        }
-
-        function openAccountSheet() {
-            const u = currentUser();
-            document.getElementById('accName').textContent = isGuestUser(u) ? '当前：游客' : '当前账号：' + u;
-            document.getElementById('accHint').textContent = isGuestUser(u)
-                ? '游客进度只在这个浏览器里。注册一个账号可以多出 3 个存档位，也能导出存档码换设备接着玩。'
-                : '这个账号的金币、胜负和存档都存在本机浏览器；换设备请用下面的存档码。';
-            document.getElementById('switchAcc').textContent = isGuestUser(u) ? '登录 / 注册' : '切换账号';            document.getElementById('codeBox').value = '';
-            accMsg('');
-            syncMusicUi();
-            openSheet('accSheet');
-        }
-
-        function renderSlots() {
-            const box = document.getElementById('slotList');
-            if (!box) return;
-            const list = loadSlots();
-            box.innerHTML = '';
-            list.forEach((s, i) => {
-                const row = document.createElement('div');
-                row.className = 'slotrow';
-                const info = document.createElement('div');
-                info.className = 'info';
-                if (!s || !s.snap) {
-                    info.innerHTML = '<b>' + (i + 1) + ' 号位 · 空</b><small>点「存档」把当前进度存到这里</small>';
-                } else {
-                    info.innerHTML = '<b>' + (i + 1) + ' 号位 · 第 ' + (s.level || 1) + ' 关 · ' +
-                        (s.moves || 0) + ' 步</b><small>' + fmtSec(s.seconds) + ' · ' + esc(s.time || '') + '</small>';
-                }
-                const ops = document.createElement('div');
-                ops.className = 'ops';
-                const bSave = document.createElement('button');
-                bSave.textContent = '存档';
-                bSave.onclick = () => saveSlot(i);
-                const bLoad = document.createElement('button');
-                bLoad.textContent = '读取';
-                bLoad.disabled = !(s && s.snap);
-                bLoad.onclick = () => loadSlot(i);
-                const bDel = document.createElement('button');
-                bDel.textContent = '清空';
-                bDel.className = 'warn';
-                bDel.disabled = !(s && s.snap);
-                bDel.onclick = () => clearSlot(i);
-                ops.appendChild(bSave); ops.appendChild(bLoad); ops.appendChild(bDel);
-                row.appendChild(info); row.appendChild(ops);
-                box.appendChild(row);
-            });
-        }
-
-        /* =====================================================================
-           【新增 2】背景音乐
-           ---------------------------------------------------------------------
-           用法：把音乐文件放到 audio/ 目录，按这个顺序找，找到哪个用哪个：
-                 audio/bgm.mp3  →  audio/bgm.ogg  →  audio/bgm.m4a  →  audio/bgm.wav
-           要点：
-           · loop 无缝循环；音量默认 35%，可在「账号」面板里调，选择会记住。
-           · 浏览器不允许"用户没操作就出声"，所以首次点击/按键时补播一次，
-             这是标准做法，不是 bug。
-           · 没找到音乐文件时按钮变成「🔇 无音乐」，游戏不受影响。
-           ===================================================================== */
-        /* 同时接受 audio/ 子目录和根目录两种放法：
-           拖拽上传时文件夹常被"摊平"，文件会落到根目录，这里一起兜住。
-           同一后缀优先用 audio/ 里的，没有再退回根目录。 */
         const BGM_CANDIDATES = [
             'audio/bgm.mp3', 'bgm.mp3',
             'audio/bgm.ogg', 'bgm.ogg',
             'audio/bgm.m4a', 'bgm.m4a',
             'audio/bgm.wav', 'bgm.wav'
         ];
+        const MUSIC_KEY = 'nlge-music';
+
         let bgmEl = null;
         let bgmTry = 0;
-        let bgmBroken = false;
-        let bgmErrCode = 0;
+        let bgmBroken = false;     // 8 个候选都读不到
         let musicOn = true;
         let musicVol = 0.35;
         let bgmFadeTimer = null;
+        let bgmStarted = false;    // 成功播放过没有（决定回到页面时要不要续播）
 
-        function loadMusicPref() {
-            const p = kvGet(NLGW.MUSIC, {});
-            musicOn = (p && p.on !== false);
-            const v = (p && typeof p.vol === 'number') ? p.vol : 0.35;
-            musicVol = Math.min(1, Math.max(0, v));
+        function musicPrefRead() {
+            try {
+                const raw = localStorage.getItem(MUSIC_KEY);
+                if (!raw) return null;
+                const v = JSON.parse(raw);
+                return (v && typeof v === 'object') ? v : null;
+            } catch (e) { return null; }
         }
-        function saveMusicPref() { kvSet(NLGW.MUSIC, { on: musicOn, vol: musicVol }); }
+        function musicPrefSave() {
+            try {
+                localStorage.setItem(MUSIC_KEY, JSON.stringify({ on: musicOn, vol: musicVol }));
+            } catch (e) {}
+        }
 
         function initMusic() {
-            loadMusicPref();
+            const pref = musicPrefRead();
+            if (pref) {
+                musicOn = pref.on !== false;
+                const v = parseFloat(pref.vol);
+                if (!isNaN(v)) musicVol = Math.min(1, Math.max(0, v));
+            }
+
             try { bgmEl = new Audio(); } catch (e) { bgmEl = null; }
             if (!bgmEl) { bgmBroken = true; syncMusicUi(); return; }
 
             bgmEl.loop = true;
             bgmEl.preload = 'auto';
             bgmEl.volume = 0;
-            bgmEl.addEventListener('error', () => {
-                // 记下浏览器给的错误码，方便排查（4=找不到/格式不支持，3=解码失败）
-                bgmErrCode = (bgmEl.error && bgmEl.error.code) || 0;
-                bgmTry++;
-                loadBgmSource();
+            bgmEl.addEventListener('error', () => { bgmTry++; loadBgmSource(); });
+            bgmEl.addEventListener('playing', () => {
+                bgmStarted = true;
+                fadeBgm(musicOn ? musicVol : 0);
             });
-            bgmEl.addEventListener('playing', () => { fadeBgm(musicOn ? musicVol : 0); });
             bgmEl.addEventListener('canplay', () => { if (musicOn) safePlay(); });
 
             loadBgmSource();
@@ -1030,18 +318,30 @@
             ['pointerdown', 'keydown', 'touchstart'].forEach(ev => {
                 document.addEventListener(ev, unlock, { passive: true });
             });
-            safePlay();      // 有的浏览器/用户设置允许直接播，试一下不亏
+
+            // 离开游戏界面就静音：切标签页/最小化、关闭、跳转、刷新都算
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) pauseForLeave();
+                else if (musicOn && bgmStarted) safePlay();
+            });
+            addEventListener('pagehide', pauseForLeave);
+            addEventListener('beforeunload', pauseForLeave);
+            addEventListener('blur', () => {
+                // 窗口失焦（切到别的应用）也停，避免人不在还一直响
+                if (document.hidden) pauseForLeave();
+            });
+
+            bindMusicUi();
+            safePlay();
         }
 
         function loadBgmSource() {
             if (!bgmEl) return;
             if (bgmTry >= BGM_CANDIDATES.length) {
                 bgmBroken = true;
-                // 控制台留一条可读的诊断，别让人猜
                 try {
-                    console.warn('[奶了个蛙] 背景音乐一个都没找到。试过：' + BGM_CANDIDATES.join('、') +
-                        '；MediaError=' + (bgmErrCode || 'n/a') +
-                        '（4 = 文件不存在或格式不支持，3 = 文件损坏解不开）');
+                    console.warn('[奶了个蛙] 背景音乐一个都没找到。试过：' +
+                        BGM_CANDIDATES.join('、'));
                 } catch (e) {}
                 syncMusicUi();
                 return;
@@ -1064,6 +364,15 @@
             try { bgmEl.pause(); } catch (e) {}
         }
 
+        /* 离开页面：立即静音并暂停。用计时器淡出在 pagehide 时来不及执行，
+           所以这里直接把音量归零再暂停，回来时再从 0 淡入。 */
+        function pauseForLeave() {
+            if (bgmFadeTimer) { clearInterval(bgmFadeTimer); bgmFadeTimer = null; }
+            if (!bgmEl) return;
+            try { bgmEl.volume = 0; } catch (e) {}
+            safePause();
+        }
+
         function fadeBgm(target) {
             if (!bgmEl) return;
             if (bgmFadeTimer) { clearInterval(bgmFadeTimer); bgmFadeTimer = null; }
@@ -1084,11 +393,11 @@
 
         function toggleMusic() {
             if (bgmBroken) {
-                toast('没找到音乐文件：把 bgm.mp3 放进 audio/ 目录，或直接和 index.html 放一起');
+                openMusicSheet();
                 return;
             }
             musicOn = !musicOn;
-            saveMusicPref();
+            musicPrefSave();
             if (musicOn) {
                 safePlay();
                 fadeBgm(musicVol);
@@ -1102,126 +411,62 @@
         function syncMusicUi() {
             const btn = document.getElementById('musicBtn');
             if (btn) {
-                if (bgmBroken) setPill(btn, '🔇', '无音乐');
-                else if (musicOn) setPill(btn, '🔊', '音乐');
-                else setPill(btn, '🔇', '静音');
+                const ico = btn.querySelector('.ico');
+                const lbl = btn.querySelector('.lbl');
+                if (ico) ico.textContent = bgmBroken ? '🔇' : (musicOn ? '🔊' : '🔇');
+                if (lbl) lbl.textContent = bgmBroken ? '无音乐' : (musicOn ? '音乐' : '静音');
                 btn.classList.toggle('off', !musicOn || bgmBroken);
-                btn.title = bgmBroken
-                    ? '没找到 bgm.mp3（放 audio/ 目录或和 index.html 放一起都行）'
-                    : (musicOn ? '点一下关掉背景音乐' : '点一下打开背景音乐');
+                btn.title = bgmBroken ? '没找到音乐文件' : (musicOn ? '点一下静音' : '点一下开启');
             }
-            const tb = document.getElementById('musicToggle');
-            if (tb) tb.textContent = musicOn ? '音乐：开' : '音乐：关';
+            const tg = document.getElementById('musicToggle');
+            if (tg) tg.textContent = bgmBroken ? '没有可播放的音乐文件' : (musicOn ? '暂停音乐' : '播放音乐');
+            const hint = document.getElementById('musicHint');
+            if (hint) {
+                hint.textContent = bgmBroken
+                    ? '没找到音乐文件。把 bgm.mp3 放进 audio/ 目录，或直接和 index.html 放在一起，刷新即可。'
+                    : '默认音量 35%。切到别的标签页、最小化窗口或离开页面时会自动暂停，回来接着放。';
+            }
             const vr = document.getElementById('volRange');
             if (vr) vr.value = String(Math.round(musicVol * 100));
             const vt = document.getElementById('volText');
             if (vt) vt.textContent = Math.round(musicVol * 100) + '%';
         }
 
-        /* ---------------- 事件绑定 ---------------- */
-        function bindUi() {
+        function openMusicSheet() {
+            const el = document.getElementById('musicSheet');
+            if (el) el.classList.add('show');
+        }
+        function closeMusicSheet() {
+            const el = document.getElementById('musicSheet');
+            if (el) el.classList.remove('show');
+        }
+
+        function bindMusicUi() {
             const on = (id, ev, fn) => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener(ev, fn);
             };
-
             on('musicBtn', 'click', toggleMusic);
+            on('musicCfg', 'click', openMusicSheet);
             on('musicToggle', 'click', toggleMusic);
+            on('closeMusic', 'click', closeMusicSheet);
 
-            on('userBtn', 'click', () => openAccountSheet());
-
-            on('tabLogin', 'click', () => setAuthMode('login'));
-            on('tabReg', 'click', () => setAuthMode('reg'));
-            on('authGo', 'click', submitAuth);
-            on('authGuest', 'click', () => {
-                if (isGuestUser(currentUser())) hideAllSheets();
-                else toGuest();
-            });
-
-            on('openSaves', 'click', () => { renderSlots(); saveMsg(''); openSheet('saveSheet'); });
-            on('closeSaves', 'click', () => closeSheet('saveSheet'));
-            on('closeAcc', 'click', () => closeSheet('accSheet'));
-
-            on('switchAcc', 'click', () => {
-                if (isGuestUser(currentUser())) { setAuthMode('login'); openSheet('authSheet'); }
-                else {
-                    if (!confirm('退出当前账号？进度已经自动保存，重新登录就能继续。')) return;
-                    toGuest();
-                    setAuthMode('login');
-                    openSheet('authSheet');
-                }
-            });
-
-            on('exportBtn', 'click', () => {
-                const code = exportCode();
-                const box = document.getElementById('codeBox');
-                box.value = code;
-                box.select();
-                let copied = false;
-                try {
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        navigator.clipboard.writeText(code).then(() => {}, () => {});
-                        copied = true;
-                    }
-                } catch (e) {}
-                accMsg(copied ? '存档码已生成并复制，粘贴到另一台设备即可' : '存档码已生成，手动复制下面这串', true);
-            });
-
-            on('importBtn', 'click', () => {
-                const code = document.getElementById('codeBox').value;
-                if (!code || !code.trim()) { accMsg('先把存档码粘贴到上面'); return; }
-                const res = importCode(code);
-                if (!res.ok) { accMsg(res.msg || ''); return; }
-                accMsg(res.msg, true);
-                toast(res.msg);
-            });
-
+            const sheet = document.getElementById('musicSheet');
+            if (sheet) {
+                sheet.addEventListener('click', (e) => {
+                    if (e.target === sheet) closeMusicSheet();
+                });
+            }
             on('volRange', 'input', (e) => {
                 musicVol = Math.min(1, Math.max(0, (parseInt(e.target.value, 10) || 0) / 100));
-                saveMusicPref();
+                musicPrefSave();
                 if (musicOn) {
                     if (bgmFadeTimer) { clearInterval(bgmFadeTimer); bgmFadeTimer = null; }
                     try { bgmEl.volume = musicVol; } catch (err) {}
                 }
                 syncMusicUi();
             });
-
-            // 点空白处关掉弹层
-            ['authSheet', 'accSheet', 'saveSheet'].forEach(id => {
-                const el = document.getElementById(id);
-                if (!el) return;
-                el.addEventListener('click', (e) => {
-                    if (e.target === el) {
-                        if (id === 'saveSheet') closeSheet('saveSheet');
-                        else if (id === 'accSheet') closeSheet('accSheet');
-                        else closeSheet('authSheet');
-                    }
-                });
-            });
-
-            // 关页面 / 切后台前，把当前牌面落盘
-            addEventListener('pagehide', () => persistAuto());
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden) persistAuto();
-            });
         }
-
-        /* ---------------- 启动 ---------------- */
-        function boot() {
-            applyProfile();
-            refreshUserPill();
-            const auto = loadAuto();
-            if (!(auto && restoreSnapshot(auto.snap))) {
-                level = clampLevel(kvGet(levelKey(), 1));
-                newGame();
-            }
-            initMusic();
-            bindUi();
-        }
-
-        /* 脚本一加载就把"老存档搬家 + 游客会话"做完，后面 loadCoins() 才读得到正确的键 */
-        migrateLegacy();
-        ensureSession();
 
         /* ========= 图案清单 =========
            对应 images 文件夹里的 9 张奶蛙图片；
@@ -1273,15 +518,10 @@
             document.getElementById('timeText').textContent = m + ':' + s;
         }
 
-        /* ========= 胜负记录：存在当前账号名下，关掉网页也不丢 ========= */
+        /* ========= 胜负记录：存浏览器 localStorage，关掉网页也不丢 ========= */
         function loadStats() {
-            try {
-                const st = JSON.parse(localStorage.getItem(statsKey()));
-                if (st && typeof st === 'object') {
-                    return { wins: parseInt(st.wins, 10) || 0, loses: parseInt(st.loses, 10) || 0 };
-                }
-                return { wins: 0, loses: 0 };
-            } catch (e) { return { wins: 0, loses: 0 }; }
+            try { return JSON.parse(localStorage.getItem('yygy-stats')) || { wins: 0, loses: 0 }; }
+            catch (e) { return { wins: 0, loses: 0 }; }
         }
         function renderStats() {
             const st = loadStats();
@@ -1291,7 +531,7 @@
         function addStat(key) {
             const st = loadStats();
             st[key]++;
-            try { localStorage.setItem(statsKey(), JSON.stringify(st)); } catch (e) {}
+            try { localStorage.setItem('yygy-stats', JSON.stringify(st)); } catch (e) {}
             renderStats();
         }
 
@@ -1299,10 +539,10 @@
         const TOOL_COST = 10;
         let coins = loadCoins();
         function loadCoins() {
-            try { return parseInt(localStorage.getItem(coinsKey()), 10) || 0; } catch (e) { return 0; }
+            try { return parseInt(localStorage.getItem('yygy-coins')) || 0; } catch (e) { return 0; }
         }
         function saveCoins() {
-            try { localStorage.setItem(coinsKey(), String(coins)); } catch (e) {}
+            try { localStorage.setItem('yygy-coins', String(coins)); } catch (e) {}
         }
         function renderCoins() {
             document.getElementById('coinsText').textContent = coins;
@@ -1323,7 +563,6 @@
             const faces = shuffle(alive.map(t => t.p));
             alive.forEach((t, i) => { t.p = faces[i]; });
             renderBoard();
-            autoSave();
         }
 
         /* 移出：把槽里最后至多 3 张牌退回牌堆，腾出槽位救急 */
@@ -1332,7 +571,6 @@
             coins -= TOOL_COST; saveCoins(); renderCoins();
             slot.splice(-3).forEach(t => { t.removed = false; });
             renderAll();
-            autoSave();
         }
 
         /* 复活：失败时把槽里所有牌退回牌堆、继续本局（计时继续） */
@@ -1345,7 +583,6 @@
             document.getElementById('overlay').classList.remove('show');
             resumeTimer();
             renderAll();
-            autoSave();
         }
 
         /* 洗牌算法：把数组顺序随机打乱（发牌公平全靠它） */
@@ -1483,8 +720,6 @@
                 '第 ' + level + ' 关 / 共 ' + LEVEL_COUNTS.length + ' 关 · 本关 ' + count + ' 张牌';
             renderAll();
             fitScreen();
-            saveLevel(level);    // 记住"上次玩到第几关"，下次打开直接接着这关
-            autoSave(true);      // 新开的牌面立刻落一份盘
         }
 
         /* 判断一张牌是否被压住：存在"层级更高 + 位置重叠 + 还没消失"的牌 */
@@ -1585,7 +820,6 @@
 
             renderBoard();                 // 牌堆立刻更新（暗牌可能变亮）
             flyToSlot(tile, fromRect, idx); // 卡槽等分身落地后再刷新
-            autoSave();                     // 自动存档：这一手记下来
             checkEnd();
         }
 
@@ -1595,21 +829,17 @@
             if (boardClear && slot.length === 0) {
                 stopTimer();
                 addStat('wins');
-                coins += 2; saveCoins(); renderCoins();   // 通关奖赏：2 金币（存当前账号）
+                coins += 2; saveCoins(); renderCoins();   // 通关奖赏：2 金币（存本机浏览器）
                 const reward = '🪙 金币 +2！当前 ' + coins + ' 币';
-                // 关卡进度记在账号上：下次打开直接从下一关开始
-                saveLevel(level < LEVEL_COUNTS.length ? level + 1 : 1);
                 if (level < LEVEL_COUNTS.length) {
                     showOverlay('🎉 第 ' + level + ' 关通关！', '下一关 →', () => { level++; newGame(); }, reward);
                 } else {
                     showOverlay('🏆 太强了！十关全部通关！', '再玩一遍', () => { level = 1; newGame(); }, reward);
                 }
-                persistAuto();   // 此时 gameOver 已为 true → 顺手清掉"续玩快照"，免得下次读到空牌堆
             } else if (slot.length >= SLOT_MAX) {
                 stopTimer();
                 addStat('loses');
                 showOverlay('😭 槽位满了，挑战失败！', '重试本关', () => newGame(), '🪙 当前 ' + coins + ' 金币', true);
-                persistAuto();
             }
         }
 
@@ -1640,16 +870,22 @@
 
         /* ========= 全屏适配：按屏幕尺寸整体缩放游戏 =========
            先按 1 倍量出游戏的"自然尺寸"，再取 屏幕宽/游戏宽 与 屏幕高/游戏高
-           的较小值作为缩放比——保证任何屏幕（电脑/手机）都刚好装得下、占得满 */
+           的较小值作为缩放比——保证任何屏幕（电脑/手机）都刚好装得下、占得满。
+           body 有 8px 内边距，算的时候要扣掉，否则上下各被裁掉一截。 */
+        const SCREEN_PAD = 16;   // 左右/上下各 8px
         function fitScreen() {
             const stage = document.getElementById('stage');
             stage.style.zoom = 1;
-            const s = Math.min(innerWidth / stage.offsetWidth, innerHeight / stage.offsetHeight, 3);
+            const aw = Math.max(120, innerWidth - SCREEN_PAD);
+            const ah = Math.max(120, innerHeight - SCREEN_PAD);
+            const s = Math.min(aw / stage.offsetWidth, ah / stage.offsetHeight, 3);
             stage.style.zoom = s;
         }
         addEventListener('resize', fitScreen);   // 窗口变化/手机横竖屏切换时重新适配
+        addEventListener('load', fitScreen);     // 字体、图片都到位后再量一次，避免首屏算小
 
-        boot();   // 页面加载完成 → 先接上账号/存档/音乐，再发牌开局
+        newGame();   // 页面加载完成 → 直接发牌开局
+        initMusic(); // 背景音乐：沿用上次的开关和音量，开始播放
     </script>
 </body>
 </html>
