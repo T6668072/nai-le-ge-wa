@@ -6,6 +6,9 @@
     <title>奶了个蛙</title>
     <style>
         /* ========== 全局设置 ========== */
+        :root {
+            --game-bg: none;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
         body {
             min-height: 100vh;
@@ -14,16 +17,47 @@
             font-family: "Microsoft YaHei", sans-serif;
             padding: 8px;
             overflow: hidden;              /* 缩放适配后不出滚动条 */
+            position: relative;
+            transition: background-color .45s ease;
+        }
+        /* 选好主题后，用淡化图片垫在游戏最底层，不抢牌面的视觉重点 */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: -3%;
+            background-image: var(--game-bg);
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            filter: saturate(.72) brightness(1.08);
+            transform: scale(1.04);
+            transition: opacity .55s ease;
+            pointer-events: none;
+            z-index: 0;
+        }
+        body.in-game {
+            background: #79b56b;
+        }
+        body.in-game::before {
+            opacity: .64;
         }
         /* 游戏主体：由 fitScreen() 按屏幕整体缩放，任何屏幕都"刚好占满" */
         #stage {
             display: flex; flex-direction: column; align-items: center;
+            position: relative;
+            z-index: 2;
         }
-        h1 {
-            color: #fff;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, .25);
-            margin-bottom: 8px;
-            font-size: 28px;
+        #stage:not(.active) {
+            display: none;
+        }
+        #gameTitle {
+            display: block;
+            width: auto;
+            height: clamp(68px, 8vh, 84px);
+            max-width: 220px;
+            object-fit: contain;
+            margin-bottom: 5px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .2));
         }
         #levelInfo { color: rgba(255,255,255,.95); font-size: 16px; margin-bottom: 6px; }
         #stats { color: rgba(255,255,255,.95); font-size: 14px; margin-bottom: 14px; }
@@ -146,7 +180,10 @@
            =================================================================== */
         #topbar {
             position: fixed; top: 10px; right: 10px;
-            display: flex; gap: 8px; align-items: center; z-index: 80;
+            display: none; gap: 8px; align-items: center; z-index: 80;
+        }
+        body.in-game #topbar {
+            display: flex;
         }
         .pill {
             border: none; border-radius: 999px;
@@ -189,11 +226,369 @@
             .pill .lbl { display: none; }   /* 小屏只留图标，别挡住标题 */
         }
 
+        /* ========== 开始界面 ========== */
+        #startScreen {
+            position: fixed;
+            inset: 0;
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+            padding: clamp(24px, 5vh, 58px) 20px 0;
+            background:
+                linear-gradient(180deg, rgba(255,255,255,.04) 0%, rgba(21,63,37,.04) 58%, rgba(17,50,29,.2) 100%),
+                url("assets/start-bg.jpg") center / cover no-repeat;
+            transition: opacity .35s ease, visibility .35s ease;
+        }
+        #startScreen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        #startHero {
+            position: absolute;
+            top: clamp(16px, 3.5vh, 34px);
+            left: clamp(16px, 3vw, 38px);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            max-width: min(46vw, 330px);
+            margin-top: 0;
+            z-index: 1;
+            transition: opacity .25s ease, transform .25s ease;
+        }
+        #startTitle {
+            width: min(38vw, 310px);
+            max-height: 27vh;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 14px rgba(35, 72, 41, .22));
+            animation: titleFloat 3.4s ease-in-out infinite;
+        }
+        #startTagline {
+            margin-top: 8px;
+            color: #3d5e3d;
+            background: rgba(255, 253, 238, .65);
+            border: 1px solid rgba(255,255,255,.72);
+            border-radius: 999px;
+            padding: 6px 13px;
+            font-size: clamp(10px, 1.15vw, 13px);
+            letter-spacing: .12em;
+            box-shadow: 0 5px 16px rgba(44, 81, 46, .1);
+            backdrop-filter: blur(6px);
+        }
+        #startButtonWrap {
+            margin-top: auto;
+            padding-bottom: clamp(48px, 10vh, 102px);
+        }
+        #startBtn {
+            min-width: min(62vw, 290px);
+            padding: 16px 48px 17px;
+            border: 3px solid rgba(255,255,255,.9);
+            border-radius: 999px;
+            color: #fffdf1;
+            background: linear-gradient(180deg, #78cf67, #3f9f55);
+            box-shadow:
+                0 7px 0 #2f7e43,
+                0 14px 26px rgba(28, 75, 39, .32),
+                inset 0 1px 0 rgba(255,255,255,.38);
+            font-family: inherit;
+            font-size: clamp(20px, 2.4vw, 26px);
+            font-weight: 800;
+            letter-spacing: .2em;
+            text-indent: .2em;
+            cursor: pointer;
+            transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+        }
+        #startBtn:hover {
+            filter: brightness(1.06);
+            transform: translateY(-2px);
+            box-shadow:
+                0 9px 0 #2f7e43,
+                0 17px 32px rgba(28, 75, 39, .34),
+                inset 0 1px 0 rgba(255,255,255,.38);
+        }
+        #startBtn:active {
+            transform: translateY(4px);
+            box-shadow:
+                0 3px 0 #2f7e43,
+                0 8px 18px rgba(28, 75, 39, .28),
+                inset 0 1px 0 rgba(255,255,255,.3);
+        }
+        @keyframes titleFloat {
+            0%, 100% { transform: translateY(0) rotate(-.5deg); }
+            50% { transform: translateY(-7px) rotate(.5deg); }
+        }
+
+        /* ========== 八款背景主题 ========== */
+        #themeScreen {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            display: none;
+            padding: clamp(18px, 4vh, 46px) clamp(16px, 3vw, 42px);
+            background:
+                radial-gradient(circle at 50% 0%, rgba(255,255,255,.18), transparent 48%),
+                rgba(20, 51, 31, .9);
+            backdrop-filter: blur(8px);
+            overflow: auto;
+        }
+        #startScreen.theme-open #startHero,
+        #startScreen.theme-open #startButtonWrap {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-8px);
+        }
+        #startScreen.theme-open #themeScreen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .theme-panel {
+            width: min(100%, 920px);
+            margin: auto;
+            text-align: center;
+        }
+        .theme-panel h2 {
+            color: #fffdf0;
+            font-size: clamp(22px, 3.2vw, 34px);
+            letter-spacing: .1em;
+            text-shadow: 0 3px 12px rgba(0,0,0,.24);
+        }
+        .theme-panel .theme-hint {
+            color: rgba(255,255,255,.8);
+            font-size: clamp(12px, 1.5vw, 15px);
+            margin: 9px 0 clamp(16px, 3vh, 26px);
+        }
+        #themeGrid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: clamp(10px, 1.7vw, 18px);
+        }
+        .theme-card {
+            position: relative;
+            aspect-ratio: 4 / 5;
+            overflow: hidden;
+            border: 3px solid rgba(255,255,255,.82);
+            border-radius: 18px;
+            padding: 0;
+            background: #d9e5ce;
+            box-shadow: 0 8px 22px rgba(0,0,0,.26);
+            cursor: pointer;
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+        }
+        .theme-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform .35s ease, filter .35s ease;
+        }
+        .theme-card span {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 26px 10px 11px;
+            color: #fff;
+            font-size: clamp(12px, 1.5vw, 15px);
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-shadow: 0 2px 5px rgba(0,0,0,.45);
+            background: linear-gradient(transparent, rgba(17,44,26,.82));
+        }
+        .theme-card:hover,
+        .theme-card:focus-visible {
+            outline: none;
+            transform: translateY(-5px) scale(1.02);
+            border-color: #fff5a9;
+            box-shadow: 0 14px 28px rgba(0,0,0,.32), 0 0 0 4px rgba(255,244,151,.18);
+        }
+        .theme-card:hover img {
+            transform: scale(1.04);
+        }
+        #themeBackBtn {
+            margin-top: clamp(18px, 3vh, 28px);
+            padding: 9px 24px;
+            border: 1px solid rgba(255,255,255,.55);
+            border-radius: 999px;
+            color: #fffdf0;
+            background: rgba(255,255,255,.12);
+            font-family: inherit;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        /* ========== 卡牌点击时的幼蛙特效 ========== */
+        .baby-pop {
+            position: fixed;
+            z-index: 130;
+            width: clamp(82px, 10vw, 128px);
+            height: auto;
+            pointer-events: none;
+            transform: translate(-50%, -100%) rotate(var(--baby-rotate, 0deg)) scale(.35);
+            transform-origin: 50% 88%;
+            opacity: 0;
+            filter: drop-shadow(0 8px 12px rgba(37,65,35,.26));
+            animation: babyPop .72s cubic-bezier(.2,.85,.25,1) forwards;
+            will-change: transform, opacity;
+        }
+        @keyframes babyPop {
+            0% { opacity: 0; transform: translate(-50%, -82%) rotate(var(--baby-rotate, 0deg)) scale(.28); }
+            34% { opacity: 1; transform: translate(-50%, -118%) rotate(var(--baby-rotate, 0deg)) scale(1.08); }
+            72% { opacity: 1; transform: translate(-50%, -128%) rotate(var(--baby-rotate, 0deg)) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -158%) rotate(var(--baby-rotate, 0deg)) scale(.84); }
+        }
+
+        /* ========== 过关视频 ========== */
+        #winVideoOverlay {
+            position: fixed;
+            inset: 0;
+            z-index: 150;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            background: rgba(17,38,25,.75);
+            backdrop-filter: blur(8px);
+        }
+        #winVideoOverlay.show {
+            display: flex;
+        }
+        .win-video-card {
+            width: min(92vw, 540px);
+            max-height: 94vh;
+            overflow: auto;
+            padding: 16px;
+            border: 4px solid rgba(255,253,232,.9);
+            border-radius: 26px;
+            background: linear-gradient(180deg, #fffdf1, #f2ecd1);
+            box-shadow: 0 24px 60px rgba(0,0,0,.38);
+            text-align: center;
+            animation: videoCardIn .28s ease-out;
+        }
+        @keyframes videoCardIn {
+            from { opacity: 0; transform: translateY(12px) scale(.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .win-video-frame {
+            position: relative;
+            overflow: hidden;
+            border-radius: 17px;
+            background: #243c29;
+            width: auto;
+            height: min(60vh, 620px);
+            max-width: 100%;
+            aspect-ratio: 9 / 16;
+            margin: 0 auto;
+        }
+        #winVideo {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+            background: #000;
+            pointer-events: none;
+        }
+        #winVideo::-webkit-media-controls,
+        #winVideo::-webkit-media-controls-enclosure,
+        #winVideo::-webkit-media-controls-panel {
+            display: none !important;
+            -webkit-appearance: none !important;
+        }
+        #winVideoTitle {
+            margin-top: 13px;
+            color: #42633d;
+            font-size: clamp(20px, 3vw, 28px);
+            font-weight: 800;
+        }
+        #winVideoSub {
+            margin-top: 5px;
+            color: #9a825a;
+            font-size: 13px;
+        }
+        #nextLevelBtn {
+            width: 100%;
+            margin-top: 13px;
+            padding: 12px 16px 13px;
+            border: none;
+            border-radius: 15px;
+            color: #fff;
+            background: linear-gradient(180deg, #70c760, #439e54);
+            box-shadow: 0 5px 0 #337f43;
+            font-family: inherit;
+            cursor: pointer;
+        }
+        #nextLevelBtn strong {
+            display: block;
+            font-size: clamp(18px, 2.4vw, 23px);
+            letter-spacing: .16em;
+            text-indent: .16em;
+        }
+        #nextLevelBtn small {
+            display: block;
+            margin-top: 4px;
+            font-size: 13px;
+            color: rgba(255,255,255,.9);
+            letter-spacing: .04em;
+        }
+        #nextLevelBtn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #337f43;
+        }
+
+        @media (max-width: 700px) {
+            #themeGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .theme-panel { max-width: 520px; }
+            .theme-card { aspect-ratio: 1 / 1.18; }
+            #startHero {
+                top: 14px;
+                left: 14px;
+                max-width: 58vw;
+            }
+            #startTitle {
+                width: min(58vw, 250px);
+                max-height: 24vh;
+            }
+            .win-video-card { padding: 12px; border-radius: 21px; }
+            .win-video-frame { height: min(56vh, 560px); }
+        }
+        @media (max-height: 620px) {
+            #startHero { top: 10px; }
+            #startTitle { max-height: 25vh; }
+            #startTagline { margin-top: 8px; padding: 5px 14px; }
+            #startButtonWrap { padding-bottom: 34px; }
+            #startBtn { padding-top: 12px; padding-bottom: 13px; }
+            .win-video-frame { height: min(50vh, 430px); }
+        }
+
     </style>
 </head>
 <body>
+    <!-- 开始界面：背景与标题均来自“奶了个蛙”素材 -->
+    <section id="startScreen" aria-label="开始游戏">
+        <div id="startHero">
+            <img id="startTitle" src="assets/title.png" alt="奶了个蛙">
+            <div id="startTagline">点开牌堆 · 找到快乐</div>
+        </div>
+
+        <div id="startButtonWrap">
+            <button id="startBtn" type="button">开始游戏</button>
+        </div>
+
+        <!-- 点击开始后展示的八款背景主题 -->
+        <div id="themeScreen" aria-hidden="true">
+            <div class="theme-panel">
+                <h2>选择你的奶蛙世界</h2>
+                <p class="theme-hint">每款背景都做过淡化处理，牌面会保持清晰</p>
+                <div id="themeGrid"></div>
+                <button id="themeBackBtn" type="button">返回开始界面</button>
+            </div>
+        </div>
+    </section>
+
     <div id="stage">
-    <h1>🐸 奶了个蛙</h1>
+    <img id="gameTitle" src="assets/title.png" alt="奶了个蛙">
     <div id="levelInfo"></div>
     <div id="stats">⏱ <span id="timeText">00:00</span>　·　🖱 步数 <span id="movesText">0</span>　·　🪙 金币 <span id="coinsText">0</span>　·　🏆 胜 <span id="winsText">0</span> / 负 <span id="losesText">0</span></div>
 
@@ -208,8 +603,8 @@
     </div>
 
     <div id="toolbar">
-        <button id="shuffleBtn" class="tool">🔀 打乱<br><small>10 金币</small></button>
-        <button id="removeBtn" class="tool">📤 移出<br><small>10 金币</small></button>
+        <button id="shuffleBtn" class="tool">🔀 打乱<br><small>2 金币</small></button>
+        <button id="removeBtn" class="tool">📤 移出<br><small>2 金币</small></button>
     </div>
 
     <p id="tip">规则：点没被压住的牌入槽 → 凑齐 3 只自动消除 → 槽满 7 格失败 / 全部消完进下一关</p>
@@ -223,6 +618,22 @@
             <div class="sub" id="overlaySub"></div>
             <button id="overlayBtn" class="btn"></button>
             <button id="reviveBtn" class="btn revive" style="display:none">💘 复活（10 金币）</button>
+        </div>
+    </div>
+
+    <!-- 每次过关随机播放一段奶蛙大笑视频 -->
+    <div id="winVideoOverlay" aria-hidden="true">
+        <div class="win-video-card">
+            <div class="win-video-frame">
+                <video id="winVideo" playsinline autoplay disablepictureinpicture
+                    controlslist="nodownload nofullscreen noremoteplayback" preload="auto"></video>
+            </div>
+            <div id="winVideoTitle">过关啦！奶蛙笑出声</div>
+            <div id="winVideoSub"></div>
+            <button id="nextLevelBtn" type="button">
+                <strong>下一关</strong>
+                <small id="nextLevelCount"></small>
+            </button>
         </div>
     </div>
 
@@ -255,6 +666,7 @@
              回到页面再自动续播。
            ===================================================================== */
         const BGM_CANDIDATES = [
+            'assets/audio/bgm.mp3',
             'audio/bgm.mp3', 'bgm.mp3',
             'audio/bgm.ogg', 'bgm.ogg',
             'audio/bgm.m4a', 'bgm.m4a',
@@ -264,7 +676,7 @@
 
         let bgmEl = null;
         let bgmTry = 0;
-        let bgmBroken = false;     // 8 个候选都读不到
+        let bgmBroken = false;     // 所有候选路径都读不到
         let musicOn = true;
         let musicVol = 0.35;
         let bgmFadeTimer = null;
@@ -483,6 +895,21 @@
             { file: '黑色奶蛙.png.jpg', emoji: '🖤' },
         ];
 
+        /* ========= 开始页、主题与过关视频素材 ========= */
+        const THEMES = Array.from({ length: 8 }, (_, i) => ({
+            index: i + 1,
+            image: 'assets/themes/theme-' + (i + 1) + '.jpg',
+            name: '奶蛙主题 ' + (i + 1)
+        }));
+        const BABY_EFFECTS = Array.from(
+            { length: 5 },
+            (_, i) => 'assets/baby/baby-' + (i + 1) + '.png'
+        );
+        const WIN_VIDEOS = [
+            'assets/videos/laugh-1.mp4',
+            'assets/videos/laugh-2.mp4'
+        ];
+
         /* ========= 关卡表：10 关，牌数逐级递增 =========
            注意：三消规则要求总数是 3 的倍数，
            所以 50→51、100→102 等，都往上凑齐 */
@@ -502,6 +929,8 @@
         let moves = 0;          // 本关步数
         let seconds = 0;        // 本关已用秒数
         let timerId = null;     // 计时器句柄
+        let gameStarted = false;
+        let selectedTheme = 1;
 
         /* ========= 计时器：开局启动，结束停表 ========= */
         function startTimer() {
@@ -535,8 +964,10 @@
             renderStats();
         }
 
-        /* ========= 金币与工具：通关 +2 币，工具每个 10 币 ========= */
-        const TOOL_COST = 10;
+        /* ========= 金币与工具：通关 +2 币，打乱/移出各 2 币 ========= */
+        const SHUFFLE_COST = 2;
+        const REMOVE_COST = 2;
+        const REVIVE_COST = 10;
         let coins = loadCoins();
         function loadCoins() {
             try { return parseInt(localStorage.getItem('yygy-coins')) || 0; } catch (e) { return 0; }
@@ -549,16 +980,16 @@
             updateToolButtons();
         }
         function updateToolButtons() {
-            const poor = coins < TOOL_COST;
-            document.getElementById('shuffleBtn').disabled = poor || gameOver;
-            document.getElementById('removeBtn').disabled = poor || gameOver || slot.length === 0;
-            document.getElementById('reviveBtn').disabled = poor;
+            document.getElementById('shuffleBtn').disabled = coins < SHUFFLE_COST || gameOver;
+            document.getElementById('removeBtn').disabled =
+                coins < REMOVE_COST || gameOver || slot.length === 0;
+            document.getElementById('reviveBtn').disabled = coins < REVIVE_COST;
         }
 
         /* 打乱：把牌堆里剩余牌的图案重新洗牌（位置不动、脸型重排） */
         function useShuffle() {
-            if (gameOver || coins < TOOL_COST) return;
-            coins -= TOOL_COST; saveCoins(); renderCoins();
+            if (gameOver || coins < SHUFFLE_COST) return;
+            coins -= SHUFFLE_COST; saveCoins(); renderCoins();
             const alive = tiles.filter(t => !t.removed);
             const faces = shuffle(alive.map(t => t.p));
             alive.forEach((t, i) => { t.p = faces[i]; });
@@ -567,16 +998,16 @@
 
         /* 移出：把槽里最后至多 3 张牌退回牌堆，腾出槽位救急 */
         function useRemove() {
-            if (gameOver || coins < TOOL_COST || slot.length === 0) return;
-            coins -= TOOL_COST; saveCoins(); renderCoins();
+            if (gameOver || coins < REMOVE_COST || slot.length === 0) return;
+            coins -= REMOVE_COST; saveCoins(); renderCoins();
             slot.splice(-3).forEach(t => { t.removed = false; });
             renderAll();
         }
 
         /* 复活：失败时把槽里所有牌退回牌堆、继续本局（计时继续） */
         function useRevive() {
-            if (coins < TOOL_COST) return;
-            coins -= TOOL_COST; saveCoins(); renderCoins();
+            if (coins < REVIVE_COST) return;
+            coins -= REVIVE_COST; saveCoins(); renderCoins();
             slot.forEach(t => { t.removed = false; });
             slot = [];
             gameOver = false;
@@ -678,8 +1109,66 @@
             return positions;
         }
 
+        /* ========= 开始页与八款主题 ========= */
+        function buildThemePicker() {
+            const grid = document.getElementById('themeGrid');
+            grid.innerHTML = '';
+            THEMES.forEach(theme => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'theme-card';
+                btn.setAttribute('aria-label', '选择' + theme.name);
+                btn.dataset.theme = theme.index;
+
+                const img = document.createElement('img');
+                img.src = theme.image;
+                img.alt = '';
+                img.loading = 'eager';
+
+                const label = document.createElement('span');
+                label.textContent = theme.name;
+                btn.append(img, label);
+                btn.addEventListener('click', () => startGame(theme.index));
+                grid.appendChild(btn);
+            });
+        }
+
+        function openThemePicker() {
+            const screen = document.getElementById('startScreen');
+            screen.classList.add('theme-open');
+            document.getElementById('themeScreen').setAttribute('aria-hidden', 'false');
+            if (musicOn) safePlay();
+            const first = document.querySelector('.theme-card');
+            if (first) setTimeout(() => first.focus({ preventScroll: true }), 80);
+        }
+
+        function closeThemePicker() {
+            const screen = document.getElementById('startScreen');
+            screen.classList.remove('theme-open');
+            document.getElementById('themeScreen').setAttribute('aria-hidden', 'true');
+            document.getElementById('startBtn').focus({ preventScroll: true });
+        }
+
+        function startGame(themeIndex) {
+            selectedTheme = themeIndex;
+            gameStarted = true;
+            level = 1;
+            const theme = THEMES[themeIndex - 1];
+            document.documentElement.style.setProperty(
+                '--game-bg',
+                'url("' + theme.image + '")'
+            );
+            document.body.classList.add('in-game');
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('stage').classList.add('active');
+            document.getElementById('winVideoOverlay').classList.remove('show');
+            if (musicOn) safePlay();
+            newGame();
+        }
+
         /* 开新一局：按关卡发牌 */
         function newGame() {
+            if (!gameStarted) return;
             const count = LEVEL_COUNTS[level - 1];
             TILE_SIZE = pickTileSize(count);
             // 牌堆区宽度 = 左右翼列 + 中央 380 宽；高度由 buildLayout 按关卡计算
@@ -794,11 +1283,33 @@
             setTimeout(land, 350);   // 保险：动画万一没触发也兜底落地
         }
 
+        /* 每次点牌，在点击位置随机弹出一张奶蛙小时候的透明图片 */
+        function spawnBabyEffect(x, y) {
+            const img = document.createElement('img');
+            img.className = 'baby-pop';
+            img.src = BABY_EFFECTS[Math.floor(Math.random() * BABY_EFFECTS.length)];
+            img.alt = '';
+            img.draggable = false;
+            img.style.left = x + 'px';
+            img.style.top = y + 'px';
+            img.style.setProperty('--baby-rotate', (Math.random() * 16 - 8).toFixed(1) + 'deg');
+            document.body.appendChild(img);
+            const remove = () => { if (img.isConnected) img.remove(); };
+            img.addEventListener('animationend', remove, { once: true });
+            setTimeout(remove, 900);
+        }
+
         /* ========= 核心逻辑：点击一张牌 ========= */
-        function onTileClick(id, fromEl) {
+        function onTileClick(id, fromEl, clickX, clickY) {
             if (gameOver) return;
             const tile = tiles.find(t => t.id === id);
-            if (!tile || tile.removed || isCovered(tile)) return;  // 被压住的牌点不动
+            if (!tile || tile.removed) return;
+            const rect = fromEl.getBoundingClientRect();
+            spawnBabyEffect(
+                clickX || rect.left + rect.width / 2,
+                clickY || rect.top + rect.height / 2
+            );
+            if (isCovered(tile)) return;  // 被压住的牌点不动
 
             const fromRect = fromEl.getBoundingClientRect();  // 先记住起飞位置
             moves++;                                          // 记一步
@@ -830,17 +1341,90 @@
                 stopTimer();
                 addStat('wins');
                 coins += 2; saveCoins(); renderCoins();   // 通关奖赏：2 金币（存本机浏览器）
-                const reward = '🪙 金币 +2！当前 ' + coins + ' 币';
-                if (level < LEVEL_COUNTS.length) {
-                    showOverlay('🎉 第 ' + level + ' 关通关！', '下一关 →', () => { level++; newGame(); }, reward);
-                } else {
-                    showOverlay('🏆 太强了！十关全部通关！', '再玩一遍', () => { level = 1; newGame(); }, reward);
-                }
+                const finalRound = level >= LEVEL_COUNTS.length;
+                const nextLevel = finalRound ? 1 : level + 1;
+                showWinVideo(nextLevel, finalRound);
             } else if (slot.length >= SLOT_MAX) {
                 stopTimer();
                 addStat('loses');
                 showOverlay('😭 槽位满了，挑战失败！', '重试本关', () => newGame(), '🪙 当前 ' + coins + ' 金币', true);
             }
+        }
+
+        /* 过关后随机播放一段大笑视频，视频下方展示下一关信息 */
+        function showWinVideo(nextLevel, finalRound) {
+            gameOver = true;
+            updateToolButtons();
+            document.getElementById('overlay').classList.remove('show');
+            if (bgmEl) safePause();
+
+            const video = document.getElementById('winVideo');
+            const overlay = document.getElementById('winVideoOverlay');
+            video.pause();
+            video.controls = false;
+            video.muted = false;
+            video.src = WIN_VIDEOS[Math.floor(Math.random() * WIN_VIDEOS.length)];
+            video.load();
+
+            document.getElementById('winVideoTitle').textContent =
+                finalRound ? '🏆 十关通关，奶蛙笑疯了！' : '🎉 第 ' + level + ' 关通关！';
+            document.getElementById('winVideoSub').textContent =
+                '🪙 金币 +2 · 当前 ' + coins + ' 币 · 下一关共 ' +
+                LEVEL_COUNTS[nextLevel - 1] + ' 张卡牌';
+
+            const btn = document.getElementById('nextLevelBtn');
+            btn.querySelector('strong').textContent = finalRound ? '再玩一遍' : '下一关';
+            document.getElementById('nextLevelCount').textContent =
+                finalRound ? '第 1 关 · 27 张卡牌' :
+                '第 ' + nextLevel + ' 关 · ' + LEVEL_COUNTS[nextLevel - 1] + ' 张卡牌';
+            btn.onclick = () => {
+                video.pause();
+                video.removeAttribute('src');
+                video.load();
+                overlay.classList.remove('show');
+                overlay.setAttribute('aria-hidden', 'true');
+                level = nextLevel;
+                newGame();
+                if (musicOn) {
+                    if (bgmEl) bgmEl.volume = 0;
+                    safePlay();
+                    fadeBgm(musicVol);
+                }
+            };
+
+            overlay.classList.add('show');
+            overlay.setAttribute('aria-hidden', 'false');
+            playWinVideo();
+        }
+
+        /* 直接播放画面；若浏览器拦截带声音的自动播放，就静音续播而不是显示控制条 */
+        function playWinVideo() {
+            const video = document.getElementById('winVideo');
+            try {
+                const playing = video.play();
+                if (playing && typeof playing.catch === 'function') {
+                    playing.catch(() => {
+                        video.muted = true;
+                        const fallback = video.play();
+                        if (fallback && typeof fallback.catch === 'function') {
+                            fallback.catch(() => {});
+                        }
+                    });
+                }
+            } catch (e) {
+                try {
+                    video.muted = true;
+                    video.play().catch(() => {});
+                } catch (err) {}
+            }
+        }
+
+        /* 播放框贴合每段视频的原始比例，铺满的同时不裁掉奶蛙脸部 */
+        function syncWinVideoAspect() {
+            const video = document.getElementById('winVideo');
+            const frame = document.querySelector('.win-video-frame');
+            if (!frame || !video.videoWidth || !video.videoHeight) return;
+            frame.style.aspectRatio = video.videoWidth + ' / ' + video.videoHeight;
         }
 
         function showOverlay(msg, btnText, action, extra, showRevive) {
@@ -861,8 +1445,11 @@
         /* 事件委托：整个牌堆只装一个监听器，点谁都能接到 */
         document.getElementById('board').addEventListener('click', e => {
             const el = e.target.closest('.tile');
-            if (el) onTileClick(Number(el.dataset.id), el);
+            if (el) onTileClick(Number(el.dataset.id), el, e.clientX, e.clientY);
         });
+        document.getElementById('winVideo').addEventListener('loadedmetadata', syncWinVideoAspect);
+        document.getElementById('startBtn').addEventListener('click', openThemePicker);
+        document.getElementById('themeBackBtn').addEventListener('click', closeThemePicker);
         document.getElementById('restartBtn').addEventListener('click', () => newGame());
         document.getElementById('shuffleBtn').addEventListener('click', useShuffle);
         document.getElementById('removeBtn').addEventListener('click', useRemove);
@@ -875,6 +1462,10 @@
         const SCREEN_PAD = 16;   // 左右/上下各 8px
         function fitScreen() {
             const stage = document.getElementById('stage');
+            if (!gameStarted) {
+                stage.style.zoom = 1;
+                return;
+            }
             stage.style.zoom = 1;
             const aw = Math.max(120, innerWidth - SCREEN_PAD);
             const ah = Math.max(120, innerHeight - SCREEN_PAD);
@@ -884,7 +1475,9 @@
         addEventListener('resize', fitScreen);   // 窗口变化/手机横竖屏切换时重新适配
         addEventListener('load', fitScreen);     // 字体、图片都到位后再量一次，避免首屏算小
 
-        newGame();   // 页面加载完成 → 直接发牌开局
+        buildThemePicker();
+        renderStats();
+        renderCoins();
         initMusic(); // 背景音乐：沿用上次的开关和音量，开始播放
     </script>
 </body>
